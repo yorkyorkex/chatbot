@@ -21,13 +21,17 @@ export async function POST(req: NextRequest) {
   const messages = Array.isArray(b.messages) ? (b.messages as any[]) : [];
 
   const model = process.env.OPENROUTER_MODEL || 'deepseek/deepseek-r1-0528:free';
+  // Try to infer a proper referer for OpenRouter from the request context when env isn't set.
+  const reqOrigin = req.headers.get('origin');
+  const reqHost = req.headers.get('host');
+  const inferredReferer = reqOrigin || (reqHost ? `https://${reqHost}` : undefined);
 
   try {
-    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'http://localhost',
+    'HTTP-Referer': process.env.OPENROUTER_SITE_URL || inferredReferer || 'http://localhost',
         'X-Title': process.env.OPENROUTER_SITE_NAME || 'Chatbot',
         'Content-Type': 'application/json',
         Accept: 'application/json',

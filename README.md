@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Nova Chatbot — Deploying to Vercel
 
-## Getting Started
+This app is a Next.js (App Router) chatbot that proxies to OpenRouter. Follow these steps to deploy to Vercel and avoid common issues.
 
-First, run the development server: 
+### 1) Prepare environment variables
+
+Create these variables in Vercel Project Settings → Environment Variables (Production and Preview):
+
+- OPENROUTER_API_KEY: your OpenRouter API key
+- OPENROUTER_MODEL: deepseek/deepseek-r1-0528:free (or any OpenRouter model you prefer)
+- OPENROUTER_SITE_URL: your Vercel URL, for example https://your-app.vercel.app
+- OPENROUTER_SITE_NAME: Nova Chat (or your app name)
+- NEXT_PUBLIC_TEST_ECHO: 0
+
+Note: OPENROUTER_SITE_URL helps satisfy OpenRouter’s allowed referer checks. If not set, the app will infer it from the request host.
+
+### 2) Deploy
+
+Option A: Import the GitHub repo into Vercel. Vercel will auto-detect Next.js.
+
+Option B: Use the Vercel CLI:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm i -g vercel
+vercel
+vercel --prod
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3) Verify health and config
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Once deployed, visit:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- /api/health → should return ok
+- /api/config → should show provider: openrouter and the model
 
-## Learn More
+If /api/chat returns plain text with an error message, the OpenRouter key or model may be invalid, or the domain referer is not allowed.
 
-To learn more about Next.js, take a look at the following resources:
+### 4) Troubleshooting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 404 DEPLOYMENT_NOT_FOUND: Ensure you’re opening the latest Vercel deployment URL (check your project’s Deployments tab). If using a stale URL, it will 404.
+- 401/403 from OpenRouter: Confirm OPENROUTER_API_KEY is set and the site URL is allowed in your OpenRouter dashboard if required.
+- Blank responses: Some free models rate-limit aggressively. Try again or switch model.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Local development
 
-## Deploy on Vercel
+```bash
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Prod build locally:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```
