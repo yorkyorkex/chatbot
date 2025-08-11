@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Prose tweaks for chat */
+.prose :where(p, ul, ol) {
+  margin: 0.25rem 0;
+}
+.prose pre {
+  white-space: pre-wrap;
+}
