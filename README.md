@@ -2,7 +2,7 @@
 
 This app is a Next.js (App Router) chatbot that proxies to OpenRouter. Follow these steps to deploy to Vercel and avoid common issues.
 
-### 1) Prepare environment variables
+### 1) Prepare environment variables 
 
 Create these variables in Vercel Project Settings → Environment Variables (Production and Preview):
 
